@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine Orders Tracking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* Maintained previous CSS */
+        body {
+            font-family: 'Dancing Script', cursive;
+            background: linear-gradient(45deg, #b9022d, #ffffff);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .love {
+            position: fixed;
+            pointer-events: none;
+            animation: float 8s linear infinite;
+            opacity: 0;
+            z-index: 0;
+            font-size: 24px;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            height: 80px;
+            width: auto;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .order-card {
+            background: #fff9ea;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .order-card:hover {
+            transform: scale(1.05);
+        }
+
+        .order-title {
+            color: #ff3366;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .order-price {
+            font-size: 1.4em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .progress-container {
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ffe6eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #ff3366;
+            transition: width 0.3s ease;
+        }
+
+        .status {
+            text-align: center;
+            padding: 8px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .status.in-progress {
+            background: #fff0f5;
+            color: #ff3366;
+        }
+
+        .status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .whatsapp-chat {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating love shapes -->
+    <div class="love" style="left: 10%">❤️</div>
+    <div class="love" style="left: 20%; animation-delay: 1s">💖</div>
+    <div class="love" style="left: 30%; animation-delay: 2s">💝</div>
+
+    <div class="container">
+        <div class="header">
+            <img src="logo purpose-01.png" alt="Company Logo" class="logo">
+            <h1>Valentine's Orders 💘</h1>
+        </div>
+
+        <div class="orders-grid" id="ordersContainer"></div>
+    </div>
+
+    <!-- WhatsApp Chat Button -->
+    <div class="whatsapp-chat" onclick="openWhatsApp()">
+        <i class="fab fa-whatsapp" style="font-size: 30px;"></i>
+    </div>
+
+    <script>
+        // Orders with progress managed in code (update these values as needed)
+        let orders = JSON.parse(localStorage.getItem('valentineOrders')) || [
+            { id: 1, title: 'Alwino Hamper', price: 'Valentine Hamper customised', progress: 30 },
+            { id: 2, title: 'JT wallet', price: 'Image and Name', progress: 100 },
+            { id: 3, title: 'Lizz Wallet', price: 'With name and Logo', progress: 80 },
+            { id: 4, title: 'Kandeshi', price: 'Birthday Hamper', progress: 10 }
+        ];
+
+        // Save to localStorage (call this function whenever you update progress)
+        function saveOrders() {
+            localStorage.setItem('valentineOrders', JSON.stringify(orders));
+        }
+
+        // Render orders
+        function renderOrders() {
+            const container = document.getElementById('ordersContainer');
+            container.innerHTML = orders.map(order => `
+                <div class="order-card">
+                    <h2 class="order-title">${order.title}</h2>
+                    <p class="order-price">${order.price}</p>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${order.progress}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="status ${order.progress === 100 ? 'completed' : 'in-progress'}">
+                        ${order.progress === 100 ? 'Completed 🎉' : `${order.progress}% Complete`}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // WhatsApp integration
+        function openWhatsApp() {
+            const phone = '+264817854573'; // Replace with your number
+            const message = 'Hello! I have a question about my Valentine order.';
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // Initial render
+        renderOrders();
+
+        // Add dynamic floating hearts
+        function createLoveShapes() {
+            const container = document.body;
+            const emojis = ['❤️', '💖', '💝'];
+            
+            for(let i = 0; i < 8; i++) {
+                const love = document.createElement('div');
+                love.className = 'love';
+                love.style.left = Math.random() * 100 + '%';
+                love.style.animationDelay = Math.random() * 5 + 's';
+                love.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                container.appendChild(love);
+            }
+        }
+
+        createLoveShapes();
+    </script>
+    <!-- Add Font Awesome for WhatsApp icon -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</body>
+</html>
